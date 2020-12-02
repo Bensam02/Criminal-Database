@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-import tkinter.messagebox
+from tkinter import messagebox
 import sqlite3
 import tkinter.ttk as ttk
 
@@ -134,11 +134,7 @@ def crime_homepage():
     tree_view.column('F',minwidth=115,width=120,stretch=tk.NO)
 
     
-#    global function_button_frame
-#   function_button_frame=tk.Frame(master=main_window,height=300,width=270,bg="#000000")
-#    function_button_frame.place(x=60,y=100)
-
-    global add_button,delete_button,reset_button,deleteall_button
+    global add_button,delete_button,reset_button
     global search_button,search_entry
 
     search_entry=tk.Entry(master=main_window,borderwidth=8,width=35,relief="flat")
@@ -153,20 +149,19 @@ def crime_homepage():
 
     delete_button=tk.Button(master=main_window,width=35, text="Delete",bg="#000080",fg="#FFFFFF")
 
-    deleteall_button=tk.Button(master=main_window,width=35, text="Delete All",bg="#000080",fg="#FFFFFF")
-
-
     search_entry.place(x=50,y=150)
     search_button.place(x=50,y=210)
     reset_button.place(x=50,y=270)
     add_button.place(x=50,y=330)
     delete_button.place(x=50,y=390)
-    deleteall_button.place(x=50,y=450)
 
     global logout_button
     logout_button=tk.Button(master=main_window,width=20,text="LOGOUT",bg="#3A4141",fg="#FFFFFF")
     logout_button.place(x=1000,y=5)
     logout_button.config(command=clicked_logout)
+
+    global pending_label, ongoing_label, completed_label
+    global pending_result, ongoing_result, completed_result
    
     clicked_crimemenu()
    
@@ -216,7 +211,13 @@ def clicked_crimemenu():
     reset_button.config(command=clicked_crimemenu)
     add_button.config(text="Add a new Crime",command=clicked_addcrime)
     delete_button.config(text="Delete a Crime",command=delete_crime_clicked)
-    deleteall_button.config(text="Delete all Crimes",command=clicked_addcrime)
+    
+    pending_label.destroy()
+    ongoing_label.destroy()
+    completed_label.destroy()
+    pending_result.destroy()
+    ongoing_result.destroy()
+    completed_result.destroy()
 
 
 def clicked_stationmenu():
@@ -265,7 +266,14 @@ def clicked_stationmenu():
     reset_button.config(command=clicked_stationmenu)
     add_button.config(text="Add a new Station",command=clicked_addstation)
     delete_button.config(text="Delete a Station",command=delete_station_clicked)
-    deleteall_button.config(text="Delete all Stations",command=clicked_addstation)
+
+    pending_label.destroy()
+    ongoing_label.destroy()
+    completed_label.destroy()
+    pending_result.destroy()
+    ongoing_result.destroy()
+    completed_result.destroy()
+    
 
    
 def clicked_criminalmenu():
@@ -314,7 +322,14 @@ def clicked_criminalmenu():
     reset_button.config(command=clicked_criminalmenu)
     add_button.config(text="Add a new Criminal",command=clicked_addcriminal)
     delete_button.config(text="Delete a Criminal",command=delete_criminal_clicked)
-    deleteall_button.config(text="Delete all Criminals",command=clicked_addcriminal)
+
+    pending_label.destroy()
+    ongoing_label.destroy()
+    completed_label.destroy()
+    pending_result.destroy()
+    ongoing_result.destroy()
+    completed_result.destroy()
+    
 
 
 def clicked_victimmenu():
@@ -363,7 +378,14 @@ def clicked_victimmenu():
     reset_button.config(command=clicked_victimmenu)
     add_button.config(text="Add a new Victim",command=clicked_addvictim)
     delete_button.config(text="Delete a Victim",command=delete_victim_clicked)
-    deleteall_button.config(text="Delete all Victims",command=clicked_addvictim)
+
+    pending_label.destroy()
+    ongoing_label.destroy()
+    completed_label.destroy()
+    pending_result.destroy()
+    ongoing_result.destroy()
+    completed_result.destroy()
+    
    
 
 def clicked_complaintmenu():
@@ -409,13 +431,44 @@ def clicked_complaintmenu():
     search_button.config(command=search_complaint)
 
 
+    conn_crime=sqlite3.connect('crime.db')
+    c_crime=conn_crime.cursor()
+    query_pending="Select COUNT (complaint_id) from complaint where complaint.status='Pending'"
+    query_ongoing="Select COUNT (complaint_id) from complaint where complaint.status='Ongoing'"
+    query_closed="Select COUNT (complaint_id) from complaint where complaint.status='Closed'"
+    c_crime.execute(query_pending)
+    res_p=c_crime.fetchone()
+    r_p=res_p[0]
+    c_crime.execute(query_ongoing)
+    res_o=c_crime.fetchone()
+    r_o=res_o[0]	
+    c_crime.execute(query_closed)
+    res_c=c_crime.fetchone()
+    r_c=res_c[0]
+   
+    global pending_label, ongoing_label, completed_label
+    global pending_result, ongoing_result, completed_result
+    pending_label=Label(main_window, text="Pending:", width=8, font=("bold",10))
+    ongoing_label=Label(main_window, text="Ongoing:", width=8, font=("bold",10))
+    completed_label=Label(main_window, text="Closed:", width=8, font=("bold",10))
+    pending_label.place(x= 100, y=470)
+    ongoing_label.place(x= 100, y=500)
+    completed_label.place(x= 100, y=530)
+    pending_result=Label(main_window, text=str(r_p),  width=6, font=("bold",10))
+    ongoing_result=Label(main_window, text=str(r_o), width=6, font=("bold",10))
+    completed_result=Label(main_window, text=str(r_c), width=6, font=("bold",10))
+    pending_result.place(x= 180, y=470)
+    ongoing_result.place(x= 180, y=500)
+    completed_result.place(x= 180, y=530)
+
+
     reset_button.config(command=clicked_complaintmenu)
     add_button.config(text="Add a new Complaint",command=clicked_addcomplaint)
     delete_button.config(text="Delete a Complaint",command=delete_complaint_clicked)
-    deleteall_button.config(text="Delete all Complaints",command=clicked_addcomplaint)
-   
-   
-   
+    
+
+
+
 def clicked_addcrime():
 
     global addwindow,centry0,centry1,centry2,centry3,centry4
@@ -981,7 +1034,7 @@ def new_user():
 	global addwindow
 	global user_entry, pass_entry
 	addwindow=tk.Toplevel()
-	addwindow.config(bg="#ADDADC")
+	addwindow.config(bg="#3698DE")
 	addwindow.geometry("500x400")
 	addwindow.title("Add User")
 	user_login_img=tk.PhotoImage(file="logo.png")
@@ -1029,7 +1082,6 @@ def clicked_logout():
 	reset_button.destroy()
 	add_button.destroy()
 	delete_button.destroy()
-	deleteall_button.destroy()
 	login_page()
 
 
@@ -1079,11 +1131,7 @@ def validate_login():
 login_page()
 
 
-
-
-
-   
-#crime_homepage()    
+ 
    
 main_window.mainloop()
 
