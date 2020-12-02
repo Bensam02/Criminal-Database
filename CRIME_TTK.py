@@ -50,11 +50,11 @@ def create_station_table():
 create_station_table()
 
 def create_criminal_table():
-        c_crime.execute("CREATE TABLE IF NOT EXISTS criminal(criminal_id TEXT PRIMARY KEY, criminal_name TEXT, crime_id TEXT, Place TEXT, Phone TEXT)")
+	c_crime.execute("CREATE TABLE IF NOT EXISTS criminal(criminal_id TEXT PRIMARY KEY, criminal_name TEXT, crime_id TEXT, Place TEXT, Phone TEXT, FOREIGN KEY(crime_id) REFERENCES Crime(Crime_id))")
 create_criminal_table()
- 
+
 def create_victim_table():
-        c_crime.execute("CREATE TABLE IF NOT EXISTS victim(victim_id TEXT PRIMARY KEY, victim_Name TEXT, Place TEXT, Crime_id TEXT, Phone TEXT)")
+        c_crime.execute("CREATE TABLE IF NOT EXISTS victim(victim_id TEXT PRIMARY KEY, victim_Name TEXT, Place TEXT, crime_id TEXT, Phone TEXT, FOREIGN KEY(crime_id) REFERENCES Crime(Crime_id))")
 create_victim_table()
 
 def create_complaint_table():
@@ -631,11 +631,11 @@ def clicked_addcriminal():
     clabel1.grid(row=1,column=1,pady=10,sticky="W")
     centry1 = tk.Entry(master=details_frame,width=35,bd=4,relief="flat")
     centry1.grid(row=1,column=2,pady=10,ipady=2,ipadx=2)
-    clabel2 = tk.Label(master=details_frame, text="Place",bg="#000000",anchor="w",fg="#FFFFFF",width=10,font=("bold", 10))
+    clabel2 = tk.Label(master=details_frame, text="Crime_id",bg="#000000",anchor="w",fg="#FFFFFF",width=10,font=("bold", 10))
     clabel2.grid(row=2,column=1,pady=10,sticky="W")
     centry2 = tk.Entry(master=details_frame,width=35,bd=4,relief="flat")
     centry2.grid(row=2,column=2,pady=10,ipady=2)
-    clabel3 = tk.Label(master=details_frame, text="Crime ID",bg="#000000",anchor="w",fg="#FFFFFF",width=8,font=("bold", 10))
+    clabel3 = tk.Label(master=details_frame, text="Place",bg="#000000",anchor="w",fg="#FFFFFF",width=8,font=("bold", 10))
     clabel3.grid(row=3,column=1,pady=10,sticky="W")
     centry3 = tk.Entry(master=details_frame,width=35,bd=4,relief="flat")
     centry3.grid(row=3,column=2,pady=10,ipady=2,ipadx=2)
@@ -657,6 +657,7 @@ def validatecriminal():
         response=messagebox.showerror(title="Error",message="Criminal ID is mandatory!")
         centry0.focus()
         return
+  
 
     add_criminal()
    
@@ -668,6 +669,12 @@ def add_criminal():
     crime_id = centry2.get()
     Place = centry3.get()
     Phone = centry4.get()
+    c_crime.execute("Select Crime_id from Crime")
+    res=c_crime.fetchall()
+    print(res)
+    if (int(crime_id),) not in res:
+        messagebox.showerror(title="Error",message="Add valid Crime ID!")
+        return
     c_crime.execute("INSERT INTO criminal VALUES (?,?,?,?,?)", (criminal_id, criminal_name, crime_id, Place, Phone))
     conn_crime.commit()
     conn_crime.close()
@@ -736,6 +743,12 @@ def add_victim():
     Place = centry2.get()
     Crime_id = centry3.get()
     Phone = centry4.get()
+    c_crime.execute("Select Crime_id from Crime")
+    res=c_crime.fetchall()
+    print(res)
+    if (int(Crime_id),) not in res:
+        messagebox.showerror(title="Error",message="Add valid Crime ID!")
+        return
     c_crime.execute("INSERT INTO victim VALUES (?,?,?,?,?)", (victim_id, victim_name,Place, Crime_id, Phone))
     conn_crime.commit()
     conn_crime.close()
@@ -1131,7 +1144,11 @@ def validate_login():
 login_page()
 
 
- 
+
+
+
+   
+#crime_homepage()    
    
 main_window.mainloop()
 
