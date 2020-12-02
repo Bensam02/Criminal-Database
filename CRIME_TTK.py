@@ -50,7 +50,7 @@ def create_station_table():
 create_station_table()
 
 def create_criminal_table():
-	c_crime.execute("CREATE TABLE IF NOT EXISTS criminal(criminal_id TEXT PRIMARY KEY, criminal_name TEXT, crime_id TEXT, Place TEXT, Phone TEXT, FOREIGN KEY(crime_id) REFERENCES Crime(Crime_id))")
+	c_crime.execute("CREATE TABLE IF NOT EXISTS criminal(criminal_id TEXT PRIMARY KEY , criminal_name TEXT, crime_id TEXT, Place TEXT, Phone TEXT, FOREIGN KEY(crime_id) REFERENCES Crime(Crime_id))")
 create_criminal_table()
 
 def create_victim_table():
@@ -671,7 +671,6 @@ def add_criminal():
     Phone = centry4.get()
     c_crime.execute("Select Crime_id from Crime")
     res=c_crime.fetchall()
-    print(res)
     if (int(crime_id),) not in res:
         messagebox.showerror(title="Error",message="Add valid Crime ID!")
         return
